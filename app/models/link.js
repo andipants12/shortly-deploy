@@ -1,6 +1,8 @@
 var db = require('../config');
 var crypto = require('crypto');
 
+//refactor for mongo
+
 var Link = db.Model.extend({
   tableName: 'urls',
   hasTimestamps: true,

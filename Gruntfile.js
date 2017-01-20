@@ -7,7 +7,7 @@ module.exports = function(grunt) {
         separator: ';',
       },
       dist: {
-        src: ['public/client/**/*.js', 'public/lib/**/*.js'],
+        src: ['public/client/**/*.js'],
         dest: 'public/dist/<%= pkg.name %>.js',
       },
     },
@@ -28,15 +28,37 @@ module.exports = function(grunt) {
     },
 
     uglify: {
+      options: {
+        //"banner" attached to front of minified file ==> adds maker with title and date
+        banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
+      },
+      dist: {
+        files: {
+          //added .min.js instead of just .js
+          'public/dist/<%= pkg.name %>.min.js': ['<%= concat.dist.dest %>']
+        }
+      }
     },
 
     eslint: {
-      target: [
-        // Add list of files to lint here
+      target: 
+      [
+        'Gruntfile.js',
+        'app/**/*.js',
+        'public/**/*.js',
+        'lib/**/*.js',
+        //this is the file that houses the gruntfile
+        './*.js',
+        'spec/**/*.js'
       ]
     },
 
     cssmin: {
+      dist: {
+        files: {
+          'public/dist/*.min.css': 'pubic/*.css'
+        }
+      }
     },
 
     watch: {
@@ -57,7 +79,11 @@ module.exports = function(grunt) {
     },
 
     shell: {
+      //shortcut instruction for pushing to live server
       prodServer: {
+        commmand: 'git push live master'
+        //defaults can be changed to modify error handling/messages
+
       }
     },
   });
@@ -80,22 +106,28 @@ module.exports = function(grunt) {
   ////////////////////////////////////////////////////
 
   grunt.registerTask('test', [
-    'mochaTest'
+    'mochaTest',
+    'eslint'
   ]);
 
   grunt.registerTask('build', [
+    'concat',
+    'uglify',
+    'cssmin'
   ]);
 
   grunt.registerTask('upload', function(n) {
     if (grunt.option('prod')) {
-      // add your production server task here
+      grunt.task.run(['shell:prodServer']);
     } else {
       grunt.task.run([ 'server-dev' ]);
     }
   });
 
   grunt.registerTask('deploy', [
-    // add your deploy tasks here
+    'test',
+    'build',
+    'upload'
   ]);
 
 

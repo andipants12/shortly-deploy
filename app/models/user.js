@@ -2,8 +2,7 @@ var db = require('../config');
 var bcrypt = require('bcrypt-nodejs');
 var Promise = require('bluebird');
 
-//this is a comment in our user model!!!
-//meoooooooow!
+//refactor for mongo
 
 var User = db.Model.extend({
   tableName: 'users',
